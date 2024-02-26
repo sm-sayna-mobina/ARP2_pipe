@@ -1,22 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 #include <signal.h>
 #include <time.h>
-#include <fcntl.h> 
-#include <unistd.h> 
-#include <sys/stat.h> 
-#include <sys/types.h> 
-#include <sys/select.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <stdbool.h>
 #include <errno.h>
-#include "blackboard.h"
 
 #define NUM_TARGETS 5
 
 // Pipes
-int pipes[NUM_TARGETS][2][2]; // 2 pipes for each target for bidirectional communication
+int pipes[NUM_TARGETS][2]; // 1 pipe for each target for communication
+
+typedef struct {
+    int x;
+    int y;
+} Point;
 
 //Initialize the target's location
 void initializeTargets(Point *targets_location){
@@ -32,7 +33,7 @@ void updateTargets(Point *targets_location) {
     for (int i = 0; i < NUM_TARGETS; ++i) {
         // Read from the read end of the pipe
         char buffer[256];
-        ssize_t bytes_read = read(pipes[i][0][0], buffer, sizeof(buffer));
+        ssize_t bytes_read = read(pipes[i][0], buffer, sizeof(buffer));
         if (bytes_read > 0) {
             // Assuming the message received is of the form "x,y"
             buffer[bytes_read] = '\0';
@@ -64,7 +65,7 @@ int main(){
 
     // Initialize pipes
     for (int i = 0; i < NUM_TARGETS; ++i) {
-        if (pipe(pipes[i][0]) == -1 || pipe(pipes[i][1]) == -1) {
+        if (pipe(pipes[i]) == -1) {
             perror("pipe");
             exit(EXIT_FAILURE);
         }
@@ -73,13 +74,13 @@ int main(){
     // Random seed
     srand(time(NULL));
 
-    // Initialize shared memory
-    Blackboard *shared_memory = initialize_shared_memory();
-
-    initializeTargets(shared_memory->targets);
-
     while (1) {
-        updateTargets(shared_memory->targets);
+        Point targets[NUM_TARGETS];
+        initializeTargets(targets);
+        for (int i = 0; i < NUM_TARGETS; ++i) {
+            // Write target's initial location to the pipe
+            dprintf(pipes[i][1], "%d,%d\n", targets[i].x, targets[i].y);
+        }
         sleep(1); // Adjust this based on how frequently you want to update targets
     }
 
@@ -94,10 +95,8 @@ void sig_killhandler(int signo){
         printf("I Received SIGINT Signal!\n");
         /*Close the resource*/
         for (int i = 0; i < NUM_TARGETS; ++i) {
-            close(pipes[i][0][0]); // close read end of the first pipe
-            close(pipes[i][0][1]); // close write end of the first pipe
-            close(pipes[i][1][0]); // close read end of the second pipe
-            close(pipes[i][1][1]); // close write end of the second pipe
+            close(pipes[i][0]); // close read end
+            close(pipes[i][1]); // close write end
         }
 
         /*Kill yourself!*/
