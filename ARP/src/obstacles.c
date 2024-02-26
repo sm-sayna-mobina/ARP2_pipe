@@ -1,22 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 #include <signal.h>
 #include <time.h>
-#include <fcntl.h> 
-#include <unistd.h> 
-#include <sys/stat.h> 
-#include <sys/types.h> 
-#include <sys/select.h>
+#include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <stdbool.h>
 #include <errno.h>
-#include "blackboard.h"
 
 #define NUM_OBSTACLES 5
 
 // Pipes
 int pipes[NUM_OBSTACLES][2]; // 2 pipes for each obstacle for bidirectional communication
+
+typedef struct {
+    int x;
+    int y;
+} Point;
 
 //Initialize the obstacle's location
 void initializeObstacles(Point *obstacles_location){
@@ -57,7 +58,12 @@ int main(){
 
     srand(time(NULL));
     while (1) {
-        updateObstacles(shared_memory->obstacles);
+        Point obstacles[NUM_OBSTACLES];
+        initializeObstacles(obstacles);
+        for (int i = 0; i < NUM_OBSTACLES; ++i) {
+            // Write obstacle information to pipe
+            write(pipes[i][1], &obstacles[i], sizeof(Point));
+        }
         sleep(1); // Adjust sleep duration for desired update rate (e.g., 1 second)
     }
 
