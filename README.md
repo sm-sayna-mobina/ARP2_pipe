@@ -1,6 +1,6 @@
 # ARP2_pipe
 
-# Drone Simulation Program
+# Drone Simulation Main Program
 
 ## Overview
 
@@ -12,64 +12,82 @@ This C program simulates a drone environment using the NCurses library. It provi
 - **Dynamic Position Update:** Targets and obstacles are updated in real-time based on input from the main program through a pipe.
 - **Signal Handling:** Gracefully terminates the simulation on receiving the SIGINT signal.
 
-## Prerequisites
+## Compilation and Execution
 
-Ensure the following dependencies are installed:
+1. **Prerequisites:**
+    - Ensure NCurses library and a C compiler (e.g., GCC) are installed.
 
-- **NCurses Library:** Required for graphical interface. Install using your package manager.
-
+2. **Compilation:**
     ```bash
-    sudo apt-get install libncurses5-dev
+    gcc -o drone_simulation drone_simulation.c -lncurses
     ```
 
-- **C Compiler (e.g., GCC):**
-
-    ```bash
-    sudo apt-get install build-essential
-    ```
-
-## Project Structure
-
-```
-drone_simulation/
-│
-├── drone_simulation.c   # Main C program for drone simulation
-├── blackboard.h         # Header file with data structures used in the simulation
-├── window.txt           # Log file recording process information
-```
-
-## Compilation
-
-Compile the program using GCC:
-
-```bash
-gcc -o drone_simulation drone_simulation.c -lncurses
-```
-
-## Execution
-
-1. **Run the main program:**
-   - Ensure the main program is running and providing input through the pipe.
-
-2. **Execute the drone simulation:**
-
+3. **Execution:**
     ```bash
     ./drone_simulation
     ```
 
-## Termination
-
-To terminate the simulation, press `Ctrl + C`.
+4. **Termination:**
+    - Press `Ctrl + C` to terminate the simulation.
 
 ## Logging
 
 The program logs essential process information, including PID and activity timestamp, in `window.txt`.
 
-## File Descriptions
+# Watchdog Process
 
-- **drone_simulation.c:** Main C program for drone simulation.
-- **blackboard.h:** Header file with data structures used in the simulation.
-- **window.txt:** Log file recording process information.
+## Overview
+
+This C program serves as a watchdog process for monitoring the activity of other processes in a drone simulation. It checks the activity status of specified target processes and takes appropriate actions if any process has been inactive for a defined time.
+
+## Features
+
+- **Activity Monitoring:** Monitors the last activity time of specified target processes.
+- **Automatic Termination:** Kills all specified target processes if they have been inactive for a defined time.
+
+## Prerequisites
+
+- C compiler (e.g., GCC)
+
+## Compilation and Execution
+
+1. **Compilation:**
+    ```bash
+    gcc -o watchdog_process watchdog_process.c
+    ```
+
+2. **Execution:**
+    ```bash
+    ./watchdog_process
+    ```
+
+  
+# Log File Creation and Logging
+
+## Overview
+
+This C program demonstrates log file creation and logging for a target process in a drone simulation. It records the PID and activity timestamp in a log file.
+
+## Features
+
+- **Log File Creation:** Creates a new log file or replaces an existing one.
+- **Logging:** Records essential process information, including PID and activity timestamp.
+
+## Compilation and Execution
+
+1. **Compilation:**
+    ```bash
+    gcc -o log_file_creator log_file_creator.c
+    ```
+
+2. **Execution:**
+    ```bash
+    ./log_file_creator
+    ```
+
+## Logging
+
+The program records PID and activity timestamp in the specified log file.
 
 
 ### How to install and run ###
