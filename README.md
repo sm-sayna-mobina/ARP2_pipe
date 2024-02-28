@@ -12,23 +12,6 @@ This C program simulates a drone environment using the NCurses library. It provi
 - **Dynamic Position Update:** Targets and obstacles are updated in real-time based on input from the main program through a pipe.
 - **Signal Handling:** Gracefully terminates the simulation on receiving the SIGINT signal.
 
-## Compilation and Execution
-
-1. **Prerequisites:**
-    - Ensure NCurses library and a C compiler (e.g., GCC) are installed.
-
-2. **Compilation:**
-    ```bash
-    gcc -o drone_simulation drone_simulation.c -lncurses
-    ```
-
-3. **Execution:**
-    ```bash
-    ./drone_simulation
-    ```
-
-4. **Termination:**
-    - Press `Ctrl + C` to terminate the simulation.
 
 ## Logging
 
@@ -49,19 +32,7 @@ This C program serves as a watchdog process for monitoring the activity of other
 
 - C compiler (e.g., GCC)
 
-## Compilation and Execution
 
-1. **Compilation:**
-    ```bash
-    gcc -o watchdog_process watchdog_process.c
-    ```
-
-2. **Execution:**
-    ```bash
-    ./watchdog_process
-    ```
-
-  
 # Log File Creation and Logging
 
 ## Overview
